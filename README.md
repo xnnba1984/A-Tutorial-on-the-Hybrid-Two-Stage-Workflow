@@ -10,7 +10,7 @@ Real_data.R | Analyzes the ACTG 175 clinical trial data using the hybrid workf
 ## Prerequisites
 R ≥ 4.2
 
-R packages required across scripts for evaluation, visualization, embedding, and modeling: httr, xml2, arrow, stringr, readxl, ggplot2, dplyr, tidyr, purrr, nls, tidyverse
+R packages required across scripts: data.table, mgcv, grf, speff2trial, ggplot2, dplyr, tidyr
 
 Install them with
 ```r
