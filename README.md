@@ -1,6 +1,6 @@
 # Subgroup Identification and Individualized Treatment Policies: A Tutorial on the Hybrid Two-Stage Workflow
 
-This repository contains the code that supports the results in the manuscript "Subgroup Identification and Individualized Treatment Policies: A Tutorial on the Hybrid Two-Stage Workflow". The ACTG 175 clinical trial data used in this study is extacted from the R package [speff2trial](https://cran.r-project.org/web/packages/speff2trial/index.html).
+This repository contains the code that supports the results in the manuscript "Subgroup Identification and Individualized Treatment Policies: A Tutorial on the Hybrid Two-Stage Workflow". The ACTG 175 clinical trial data used in this study is extracted from the R package [speff2trial](https://cran.r-project.org/web/packages/speff2trial/index.html).
 
 File | Purpose | Key outputs
 -----|-----|-----|
