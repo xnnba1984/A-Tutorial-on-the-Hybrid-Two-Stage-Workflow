@@ -1,7 +1,6 @@
-# Leveraging Large Language Models for Rare Disease Named Entity Recognition
+# Subgroup Identification and Individualized Treatment Policies: A Tutorial on the Hybrid Two-Stage Workflow
 
-This repository contains the code that supports all results in the manuscript "Leveraging Large Language Models for Rare Disease Named Entity Recognition". The data used in this study can be downloaded [here](https://github.com/isegura/NLP4RARE-CM-UC3M) (RareDis corpus) and [here](https://www.orphadata.com/orphanet-scientific-knowledge/) (Orphanet database).
-
+This repository contains the code that supports the results in the manuscript "Subgroup Identification and Individualized Treatment Policies: A Tutorial on the Hybrid Two-Stage Workflow". The ACTG 175 clinical trial data used in this study is extacted from the R package [speff2trial](https://cran.r-project.org/web/packages/speff2trial/index.html).
 File | Purpose | Key outputs
 -----|-----|-----|
 data_clean_rare.R | Reads and processes .ann and .txt files from the RareDis dataset. Extracts annotated entities, filters by four target types, normalizes text, and removes duplicates. Combines text and labels into a structured list. | Named list with document-level text and label objects used in NER evaluation. ​
