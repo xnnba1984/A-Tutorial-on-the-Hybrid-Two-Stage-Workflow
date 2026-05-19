@@ -234,7 +234,3 @@ The real data analysis is intended as an illustration of the two-stage framework
 If you use this code, please cite the manuscript:
 
 Xi NM, Huang X, Wang L. *From Heterogeneous Treatment Effects to Treatment Policies: A Decision Focused Framework for Clinical Trial Personalization.*
-
-## License
-
-Add the intended repository license here before public release. If no license is added, reuse permissions are ambiguous even if the repository is public.
