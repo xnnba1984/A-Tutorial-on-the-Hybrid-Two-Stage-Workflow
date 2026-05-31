@@ -2,7 +2,7 @@
 
 This repository contains code and reproducibility materials for the manuscript:
 
-**From Heterogeneous Treatment Effects to Treatment Policies: A Decision Focused Framework for Clinical Trial Personalization**
+**From Heterogeneous Treatment Effects to Treatment Policies: A Decision Focused Framework for Treatment Personalization in Drug Development**
 
 The paper studies a practical problem in clinical trials: evidence that treatment effects vary across patients does not automatically mean that an individualized treatment policy will improve clinical decisions. The manuscript proposes a two-stage framework. Stage 1 evaluates prespecified population level evidence for heterogeneous treatment effects (HTE). Stage 2 evaluates whether estimated conditional average treatment effects (CATEs) are useful for ranking patients, improving policy value, and describing empirical surrogate benefit and harm operating metrics.
 
@@ -233,4 +233,4 @@ The real data analysis is intended as an illustration of the two-stage framework
 
 If you use this code, please cite the manuscript:
 
-Xi NM, Huang X, Wang L. *From Heterogeneous Treatment Effects to Treatment Policies: A Decision Focused Framework for Clinical Trial Personalization.*
+Xi NM, Huang X, Wang L. *From Heterogeneous Treatment Effects to Treatment Policies: A Decision Focused Framework for Treatment Personalization in Drug Development.*
