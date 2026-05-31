@@ -217,7 +217,7 @@ These scenarios are used to show that population level HTE evidence, CATE rankin
 
 ## ACTG 175 Analysis Summary
 
-The ACTG 175 case study is a secondary analysis of a publicly available randomized trial. The scripts compare zidovudine monotherapy with non-zidovudine monotherapy after excluding one combination arm, construct a 96-week event-free endpoint, and use IPCW to address early censoring.
+The ACTG 175 case study is a secondary analysis of a publicly available randomized trial. The scripts compare zidovudine (AZT) monotherapy with the two AZT-containing combination regimens, AZT plus didanosine (ddI) and AZT plus zalcitabine (ddC), after excluding ddI monotherapy. This contrast compares AZT alone with treatment intensification that retained AZT. The analysis constructs a 96-week event-free endpoint and uses IPCW to address early censoring.
 
 The real data analysis is intended as an illustration of the two-stage framework. It should not be read as a new clinical recommendation for ACTG 175 treatment assignment. In the manuscript, the ACTG analysis shows that credible population level HTE evidence can coexist with limited evidence that a learned individualized policy improves held-out policy value.
 
