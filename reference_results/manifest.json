@@ -1,0 +1,118 @@
+{
+  "description": "Protected numerical outputs supporting the manuscript reviewed in R1. These are references, not newly generated results.",
+  "legacy_column_aliases": {
+    "proceed": "stage1_reject",
+    "proceed_rate": "stage1_rejection_rate",
+    "se_proceed_rate": "se_stage1_rejection_rate"
+  },
+  "files": [
+    {
+      "file": "sim_main_SiM.csv",
+      "sha256": "f8a99cbfe354a31b9b2eef594269d62f40def597a0df5cfb68f24d991ad367f8",
+      "comparison": "cells"
+    },
+    {
+      "file": "sim_main_SiM_summary.csv",
+      "sha256": "6dce5e99ab759f34d5b084b8bac2e21438cf61b165c53dd010a51398b2a85a22",
+      "comparison": "cells"
+    },
+    {
+      "file": "sim_truth_summary_step6.csv",
+      "sha256": "fd6a244824a49037f6d4ac4999762de3add596679307240426b14450dd779751",
+      "comparison": "cells"
+    },
+    {
+      "file": "supplementary_single_replicate_summary.csv",
+      "sha256": "2f504760d0a8dfb87689edaecfa24d8c7910889e085f803d2323887a4b3a2d8f",
+      "comparison": "cells"
+    },
+    {
+      "file": "information_sensitivity/sim_information_sensitivity_raw.csv",
+      "sha256": "4c7baec9d29ec00557f1224537a0ff8545d48e5898a112761646907726f6e029",
+      "comparison": "cells"
+    },
+    {
+      "file": "information_sensitivity/sim_information_sensitivity_summary.csv",
+      "sha256": "710e4bb3d828cf184b7666739e6a07da42b2948a140c0ee11b053a2f582324c6",
+      "comparison": "cells"
+    },
+    {
+      "file": "information_sensitivity/supplementary_table_s2.csv",
+      "sha256": "38016628245372ab20a0959cecdfb17e3ed730952a07f5015346fcc0e514fddb",
+      "comparison": "cells"
+    },
+    {
+      "file": "actg_validation/actg175_ipcw_stage1_bootstrap_covariance.csv",
+      "sha256": "d1fe98eb5df500997de8935c072694108b56582a45b6cd5c162fb32d5b9bf7c4",
+      "comparison": "cells"
+    },
+    {
+      "file": "actg_validation/actg175_ipcw_stage1_bootstrap_coefficients.csv",
+      "sha256": "aa894c3967e2c21d446cc45672025756179f38ff2ade5eca5804417c1d9e313f",
+      "comparison": "cells"
+    },
+    {
+      "file": "actg_validation/actg175_ipcw_stage1_effect_intervals.csv",
+      "sha256": "589d5179d92c345dae34d5027c8eedd489474126e5cea40beb7c4e7fe242d0a3",
+      "comparison": "cells"
+    },
+    {
+      "file": "actg_validation/actg175_ipcw_stage1_global.csv",
+      "sha256": "ad5c1f09d06bdc451b8d96e3290231202c0b8c2f95778cc0b369ce1062161b33",
+      "comparison": "cells"
+    },
+    {
+      "file": "actg_validation/actg175_ipcw_validation_splits.csv",
+      "sha256": "19f6f1625ed38ed473779f11c1ef0595600b04f7e4dd5d1898a4dbf9204b5896",
+      "comparison": "cells"
+    },
+    {
+      "file": "actg_validation/actg175_ipcw_validation_summary.csv",
+      "sha256": "bddad50bc821def9b01762ed7661f409b14fd9643f1709938f5cfc05af720387",
+      "comparison": "cells"
+    },
+    {
+      "file": "actg_crossfit/actg175_ipcw_stepp_cd4.csv",
+      "sha256": "f64889ce070e47612af5d3ffa28fa4fb3b27b1e5492aaab197dc8d61be76b6b4",
+      "comparison": "cells"
+    },
+    {
+      "file": "actg_crossfit/actg175_ipcw_stepp_karnofsky.csv",
+      "sha256": "34880dd920635c3133715fc11fe7798235753a0dab2a394e28a93ddb7d20406b",
+      "comparison": "cells"
+    },
+    {
+      "file": "actg_crossfit/actg175_ipcw_policy_curve.csv",
+      "sha256": "d97b28941d7ea584129f9f6a0b788eeceebcbc77140810857d1dc60159293eb3",
+      "comparison": "cells"
+    },
+    {
+      "file": "actg_crossfit/actg175_ipcw_uplift_curve.csv",
+      "sha256": "aa243a7c721c5de8a444059a4a61d196021d62c3dfc83c2cc931b0555aa9e8bb",
+      "comparison": "cells"
+    },
+    {
+      "file": "actg_crossfit/actg175_ipcw_np_curve.csv",
+      "sha256": "a92c755e7e01da453f2ccfeb624546fadd0e0468292f74dc2da0fb6aad32c88c",
+      "comparison": "cells"
+    },
+    {
+      "file": "actg_crossfit/actg175_ipcw_eval.csv",
+      "sha256": "e639e381575a48c0cd9e54c60f1b3544e67d56cabf0014e8e5d2e1a3eb42f31e",
+      "comparison": "sha256",
+      "rows": 1578,
+      "columns": 37,
+      "reason": "Participant-level covariates and outcomes are reconstructed locally; only the reference fingerprint is distributed."
+    },
+    {
+      "file": "actg_crossfit/actg175_ipcw_optionC.csv",
+      "sha256": "f0c89e2b85172d187d37ffa5b6829c7477adb55d615c2f53d0b352572a85eb92",
+      "comparison": "cells"
+    },
+    {
+      "file": "actg_crossfit/actg175_ipcw_summary.csv",
+      "sha256": "0918c1d75e0e71e2422db011777f6024997d898dac78d8c6dfcc752d0117da0d",
+      "comparison": "cells"
+    }
+  ]
+}

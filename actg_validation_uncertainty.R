@@ -17,17 +17,25 @@ set.seed(20260517)
 
 ROOT <- getwd()
 if (!file.exists(file.path(ROOT, "data/ACTG175.csv"))) {
-  stop("Run this script from the project root containing data/ACTG175.csv.")
+  stop("Run this script from the repository root containing data/ACTG175.csv.")
 }
 
-dir.create("result", showWarnings = FALSE)
+OUT_DIR <- Sys.getenv(
+  "ACTG_VALIDATION_OUT_DIR",
+  file.path(ROOT, "result", "actg_validation")
+)
+dir.create(OUT_DIR, recursive = TRUE, showWarnings = FALSE)
 
 HORIZON_DAYS <- 96 * 7
 ALPHA_HARM <- 0.10
 BENEFIT_MARGIN <- 0.0
 B <- as.integer(Sys.getenv("ACTG_VALIDATION_B", "200"))
+B_STAGE1_BOOT <- as.integer(Sys.getenv("ACTG_STAGE1_BOOT_B", "1000"))
 NUM_TREES <- as.integer(Sys.getenv("ACTG_VALIDATION_TREES", "1500"))
-NUM_THREADS <- max(1L, parallel::detectCores(logical = TRUE) - 1L)
+NUM_THREADS <- as.integer(Sys.getenv(
+  "ACTG_VALIDATION_THREADS",
+  as.character(max(1L, min(8L, parallel::detectCores(logical = TRUE) - 1L)))
+))
 
 rename_if_present <- function(dat, from, to) {
   for (i in seq_along(from)) {
@@ -80,10 +88,10 @@ prepare_actg <- function() {
       event_by_h = as.integer(!is.na(days) & !is.na(cens) &
                                 days <= HORIZON_DAYS & cens == 1L),
       early_censored = as.integer(!is.na(days) & !is.na(cens) &
-                                    days <= HORIZON_DAYS & cens == 0L),
-      R_h = as.integer(event_by_h == 1L | days > HORIZON_DAYS),
+                                    days < HORIZON_DAYS & cens == 0L),
+      R_h = as.integer(event_by_h == 1L | days >= HORIZON_DAYS),
       Y = ifelse(event_by_h == 1L, 0,
-                 ifelse(days > HORIZON_DAYS, 1, NA_real_)),
+                 ifelse(days >= HORIZON_DAYS, 1, NA_real_)),
       censor_time = pmin(days, HORIZON_DAYS),
       censor_event = early_censored
     ) |>
@@ -120,46 +128,111 @@ censor_names <- intersect(
 censor_rhs <- paste(censor_names, collapse = " + ")
 X_num <- model.matrix(as.formula(paste("~", rhs, "- 1")), data = dat_all)
 
-fit_ipcw <- function(train, eval) {
+fit_censor_model <- function(train) {
   f_cens <- as.formula(paste("Surv(censor_time, censor_event) ~", censor_rhs))
   fit <- survival::coxph(f_cens, data = train, ties = "efron", x = TRUE)
   bh <- survival::basehaz(fit, centered = FALSE)
+  list(fit = fit, basehaz = bh)
+}
+
+predict_censor_survival <- function(censor_model, eval) {
+  bh <- censor_model$basehaz
   eval_time <- pmin(eval$days, HORIZON_DAYS)
   H0 <- approx(
     bh$time, bh$hazard, xout = eval_time,
     method = "constant", f = 0, rule = 2, yleft = 0
   )$y
-  lp <- predict(fit, newdata = eval, type = "lp", reference = "zero")
+  lp <- predict(
+    censor_model$fit,
+    newdata = eval,
+    type = "lp",
+    reference = "zero"
+  )
   pmax(exp(-H0 * exp(lp)), 0.02)
 }
 
-stage1_intervals <- function() {
-  dat_stage1 <- dat_all |>
+fit_ipcw <- function(train, eval) {
+  predict_censor_survival(fit_censor_model(train), eval)
+}
+
+fit_stage1_model <- function(data) {
+  dat_stage1 <- data |>
     mutate(
-      G_hat = fit_ipcw(dat_all, dat_all),
+      G_hat = fit_ipcw(data, data),
       ipcw = ifelse(R_h == 1L, 1 / G_hat, 0)
     ) |>
     filter(R_h == 1L)
 
   f_int <- as.formula(paste("Y ~ A * (", rhs, ")"))
   lm_int <- lm(f_int, data = dat_stage1, weights = ipcw)
-  vc_hc3 <- sandwich::vcovHC(lm_int, type = "HC3")
   interaction_terms <- grep("^A:", names(coef(lm_int)), value = TRUE)
   interaction_terms <- interaction_terms[!is.na(coef(lm_int)[interaction_terms])]
-  gate_test <- car::linearHypothesis(
-    lm_int,
-    paste0(interaction_terms, " = 0"),
-    vcov. = vc_hc3,
-    test = "Chisq",
-    singular.ok = TRUE
+  list(
+    fit = lm_int,
+    interaction_terms = interaction_terms,
+    beta = coef(lm_int)[interaction_terms]
   )
-  gate_summary <- extract_chisq_test(gate_test)
-  coef_test <- lmtest::coeftest(lm_int, vcov. = vc_hc3)
+}
+
+stage1_intervals <- function() {
+  point <- fit_stage1_model(dat_all)
+  interaction_terms <- point$interaction_terms
+  beta <- point$beta
+
+  set.seed(202608230)
+  bootstrap_indices <- replicate(
+    B_STAGE1_BOOT,
+    sample.int(nrow(dat_all), nrow(dat_all), replace = TRUE),
+    simplify = FALSE
+  )
+  bootstrap_one <- function(index) {
+    tryCatch({
+      fitted <- fit_stage1_model(dat_all[index, , drop = FALSE])
+      out <- rep(NA_real_, length(interaction_terms))
+      names(out) <- interaction_terms
+      common <- intersect(interaction_terms, names(fitted$beta))
+      out[common] <- fitted$beta[common]
+      out
+    }, error = function(e) {
+      out <- rep(NA_real_, length(interaction_terms))
+      names(out) <- interaction_terms
+      out
+    })
+  }
+  if (.Platform$OS.type == "unix" && NUM_THREADS > 1L) {
+    bootstrap_list <- parallel::mclapply(
+      bootstrap_indices,
+      bootstrap_one,
+      mc.cores = NUM_THREADS,
+      mc.preschedule = FALSE,
+      mc.set.seed = FALSE
+    )
+  } else {
+    bootstrap_list <- lapply(bootstrap_indices, bootstrap_one)
+  }
+  bootstrap_beta <- do.call(rbind, bootstrap_list)
+  colnames(bootstrap_beta) <- interaction_terms
+  valid <- complete.cases(bootstrap_beta)
+  bootstrap_valid <- sum(valid)
+  if (bootstrap_valid < max(100L, 0.8 * B_STAGE1_BOOT)) {
+    stop("Too few valid Stage 1 bootstrap replicates: ", bootstrap_valid)
+  }
+  bootstrap_cov <- stats::cov(bootstrap_beta[valid, , drop = FALSE])
+  global_chisq <- as.numeric(crossprod(beta, solve(bootstrap_cov, beta)))
+  global_df <- length(beta)
+  global_summary <- data.frame(
+    chisq = global_chisq,
+    df = global_df,
+    p_value = pchisq(global_chisq, global_df, lower.tail = FALSE),
+    bootstrap_B = B_STAGE1_BOOT,
+    bootstrap_valid = bootstrap_valid,
+    uncertainty_method = "patient-level bootstrap refitting censoring and outcome models"
+  )
 
   prespec <- intersect(c("cd40", "karnof"), X_names)
   out <- lapply(prespec, function(x) {
     term <- paste0("A:", x)
-    if (!(term %in% rownames(coef_test))) {
+    if (!(term %in% names(beta))) {
       return(data.frame(
         term = x, scale_label = NA_character_, coefficient = NA_real_,
         se = NA_real_, ci_low = NA_real_, ci_high = NA_real_,
@@ -169,33 +242,41 @@ stage1_intervals <- function() {
     }
     mult <- ifelse(x == "cd40", 100, ifelse(x == "karnof", 10, 1))
     label <- ifelse(x == "cd40", "per 100 cells/mm^3", ifelse(x == "karnof", "per 10 points", "per unit"))
-    est <- coef_test[term, "Estimate"]
-    se <- coef_test[term, "Std. Error"]
+    est <- beta[term]
+    boot_values <- bootstrap_beta[valid, term]
+    se <- stats::sd(boot_values)
+    ci <- stats::quantile(boot_values, c(0.025, 0.975), names = FALSE)
+    p_raw <- 2 * pnorm(abs(est / se), lower.tail = FALSE)
     data.frame(
       term = x,
       scale_label = label,
       coefficient = est,
       se = se,
-      ci_low = est - 1.96 * se,
-      ci_high = est + 1.96 * se,
+      ci_low = ci[1],
+      ci_high = ci[2],
       scaled_coefficient = est * mult,
-      scaled_ci_low = (est - 1.96 * se) * mult,
-      scaled_ci_high = (est + 1.96 * se) * mult,
-      p_raw = coef_test[term, "Pr(>|t|)"]
+      scaled_ci_low = ci[1] * mult,
+      scaled_ci_high = ci[2] * mult,
+      p_raw = p_raw,
+      uncertainty_method = "patient-level bootstrap"
     )
   }) |>
     bind_rows() |>
     mutate(p_holm = p.adjust(p_raw, method = "holm"))
 
-  list(gate = gate_summary, option_c = out)
+  list(
+    global = global_summary,
+    option_c = out,
+    bootstrap_coefficients = bootstrap_beta,
+    bootstrap_covariance = bootstrap_cov
+  )
 }
 
-predict_split <- function(train_idx, eval_idx, seed) {
+fit_split_models <- function(train_idx, seed) {
   dtr <- dat_all[train_idx, , drop = FALSE]
-  dev <- dat_all[eval_idx, , drop = FALSE]
 
-  G_tr <- fit_ipcw(dtr, dtr)
-  G_ev <- fit_ipcw(dtr, dev)
+  censor_model <- fit_censor_model(dtr)
+  G_tr <- predict_censor_survival(censor_model, dtr)
   ipcw_tr <- ifelse(dtr$R_h == 1L, 1 / G_tr, 0)
 
   e_fit <- glm(
@@ -203,7 +284,6 @@ predict_split <- function(train_idx, eval_idx, seed) {
     data = dtr,
     family = binomial()
   )
-  e_hat <- plogis(predict(e_fit, newdata = dev))
 
   obs_tr <- dtr$R_h == 1L
   f_y <- as.formula(paste("Y ~", rhs))
@@ -219,8 +299,6 @@ predict_split <- function(train_idx, eval_idx, seed) {
     family = quasibinomial(),
     weights = ipcw_tr[obs_tr & dtr$A == 1L]
   )
-  m0_hat <- plogis(predict(m0, newdata = dev))
-  m1_hat <- plogis(predict(m1, newdata = dev))
 
   cf_obs_idx <- train_idx[obs_tr]
   cf <- causal_forest(
@@ -232,7 +310,27 @@ predict_split <- function(train_idx, eval_idx, seed) {
     num.threads = NUM_THREADS,
     seed = seed
   )
-  tau_hat <- predict(cf, X_num[eval_idx, , drop = FALSE])$predictions
+
+  list(
+    censor_model = censor_model,
+    e_fit = e_fit,
+    m0 = m0,
+    m1 = m1,
+    causal_forest = cf
+  )
+}
+
+predict_split <- function(model_bundle, eval_idx) {
+  dev <- dat_all[eval_idx, , drop = FALSE]
+
+  G_ev <- predict_censor_survival(model_bundle$censor_model, dev)
+  e_hat <- plogis(predict(model_bundle$e_fit, newdata = dev))
+  m0_hat <- plogis(predict(model_bundle$m0, newdata = dev))
+  m1_hat <- plogis(predict(model_bundle$m1, newdata = dev))
+  tau_hat <- predict(
+    model_bundle$causal_forest,
+    X_num[eval_idx, , drop = FALSE]
+  )$predictions
 
   R_ev <- dev$R_h
   Y_ev <- ifelse(R_ev == 1L, dev$Y, 0)
@@ -279,12 +377,17 @@ policy_value <- function(dat, threshold) {
 
 centered_auqc <- function(dat) {
   ord <- order(dat$tau_hat, decreasing = TRUE, na.last = NA)
-  q_grid <- seq(0.05, 1, by = 0.05)
-  nq <- pmax(1, floor(q_grid * length(ord)))
-  u_q <- cumsum(dat$tau_dr[ord])[nq] / nrow(dat)
-  u_random <- q_grid * mean(dat$tau_dr, na.rm = TRUE)
-  u_centered <- u_q - u_random
-  sum(u_centered) * 0.05
+  n <- length(ord)
+  fraction <- seq_len(n) / n
+  uplift <- cumsum(dat$tau_dr[ord]) / n
+  random_uplift <- fraction * mean(dat$tau_dr[ord])
+  centered <- uplift - random_uplift
+  fraction0 <- c(0, fraction)
+  centered0 <- c(0, centered)
+  sum(
+    diff(fraction0) *
+      (centered0[-1] + centered0[-length(centered0)]) / 2
+  )
 }
 
 operating_metrics <- function(dat, threshold) {
@@ -300,9 +403,9 @@ operating_metrics <- function(dat, threshold) {
   bene_sur <- as.integer(dat$tau_dr >= BENEFIT_MARGIN)
   c(
     treat_fraction = mean(treated),
-    harm = ifelse(sum(treated) == 0L, NA_real_, mean(harm_sur[treated])),
-    benefit_capture = mean(bene_sur * a_hat),
-    ppv_benefit = ifelse(sum(treated) == 0L, NA_real_, mean(bene_sur[treated]))
+    surrogate_harm = ifelse(sum(treated) == 0L, NA_real_, mean(harm_sur[treated])),
+    surrogate_benefit_capture = mean(bene_sur * a_hat),
+    surrogate_ppv_benefit = ifelse(sum(treated) == 0L, NA_real_, mean(bene_sur[treated]))
   )
 }
 
@@ -329,8 +432,9 @@ make_split <- function(seed) {
 validate_one <- function(b) {
   seed <- 175000 + b
   split <- make_split(seed)
-  tune <- predict_split(split$train, split$tune, seed + 10000)
-  test <- predict_split(split$train, split$test, seed + 20000)
+  model_bundle <- fit_split_models(split$train, seed + 10000)
+  tune <- predict_split(model_bundle, split$tune)
+  test <- predict_split(model_bundle, split$test)
 
   t_grid <- unique(as.numeric(quantile(
     tune$tau_hat,
@@ -354,12 +458,15 @@ validate_one <- function(b) {
   selected_ops <- operating_metrics(test, threshold)
 
   tune_np <- t(sapply(t_grid, function(t) operating_metrics(tune, t)))
-  ok <- which(!is.na(tune_np[, "harm"]) & tune_np[, "harm"] <= ALPHA_HARM)
+  ok <- which(
+    !is.na(tune_np[, "surrogate_harm"]) &
+      tune_np[, "surrogate_harm"] <= ALPHA_HARM
+  )
   np_feasible_tune <- length(ok) > 0
   if (np_feasible_tune) {
-    np_idx <- ok[which.max(tune_np[ok, "benefit_capture"])]
+    np_idx <- ok[which.max(tune_values[ok])]
   } else {
-    np_idx <- which.min(tune_np[, "harm"])
+    np_idx <- which.min(tune_np[, "surrogate_harm"])
   }
   np_threshold <- t_grid[np_idx]
   np_test_ops <- operating_metrics(test, np_threshold)
@@ -381,15 +488,15 @@ validate_one <- function(b) {
     test_value_gain_vs_selected_fixed = test_value_gain,
     test_centered_auqc = centered_auqc(test),
     test_treat_fraction = selected_ops["treat_fraction"],
-    test_harm = selected_ops["harm"],
-    test_benefit_capture = selected_ops["benefit_capture"],
-    test_ppv_benefit = selected_ops["ppv_benefit"],
+    test_surrogate_harm = selected_ops["surrogate_harm"],
+    test_surrogate_benefit_capture = selected_ops["surrogate_benefit_capture"],
+    test_surrogate_ppv_benefit = selected_ops["surrogate_ppv_benefit"],
     np_feasible_tune = np_feasible_tune,
     np_threshold = np_threshold,
     np_test_treat_fraction = np_test_ops["treat_fraction"],
-    np_test_harm = np_test_ops["harm"],
-    np_test_benefit_capture = np_test_ops["benefit_capture"],
-    np_test_ppv_benefit = np_test_ops["ppv_benefit"]
+    np_test_surrogate_harm = np_test_ops["surrogate_harm"],
+    np_test_surrogate_benefit_capture = np_test_ops["surrogate_benefit_capture"],
+    np_test_surrogate_ppv_benefit = np_test_ops["surrogate_ppv_benefit"]
   )
 }
 
@@ -414,9 +521,16 @@ cat(sprintf(
 ))
 
 st1 <- stage1_intervals()
-write.csv(st1$option_c, "result/actg175_ipcw_stage1_effect_intervals.csv", row.names = FALSE)
+stage1_path <- file.path(OUT_DIR, "actg175_ipcw_stage1_effect_intervals.csv")
+write.csv(st1$option_c, stage1_path, row.names = FALSE)
+stage1_global_path <- file.path(OUT_DIR, "actg175_ipcw_stage1_global.csv")
+write.csv(st1$global, stage1_global_path, row.names = FALSE)
+stage1_boot_path <- file.path(OUT_DIR, "actg175_ipcw_stage1_bootstrap_coefficients.csv")
+write.csv(st1$bootstrap_coefficients, stage1_boot_path, row.names = FALSE)
+stage1_cov_path <- file.path(OUT_DIR, "actg175_ipcw_stage1_bootstrap_covariance.csv")
+write.csv(st1$bootstrap_covariance, stage1_cov_path)
 
-split_path <- "result/actg175_ipcw_validation_splits.csv"
+split_path <- file.path(OUT_DIR, "actg175_ipcw_validation_splits.csv")
 if (file.exists(split_path)) file.remove(split_path)
 
 res_list <- vector("list", B)
@@ -443,13 +557,13 @@ summary_metrics <- bind_rows(lapply(
     "test_value_gain_vs_selected_fixed",
     "test_centered_auqc",
     "test_treat_fraction",
-    "test_harm",
-    "test_benefit_capture",
-    "test_ppv_benefit",
+    "test_surrogate_harm",
+    "test_surrogate_benefit_capture",
+    "test_surrogate_ppv_benefit",
     "np_test_treat_fraction",
-    "np_test_harm",
-    "np_test_benefit_capture",
-    "np_test_ppv_benefit"
+    "np_test_surrogate_harm",
+    "np_test_surrogate_benefit_capture",
+    "np_test_surrogate_ppv_benefit"
   ),
   function(metric) cbind(metric = metric, summarise_metric(res[[metric]]))
 ))
@@ -460,6 +574,8 @@ summary_extra <- data.frame(
     "num_trees",
     "num_threads",
     "analysis_n",
+    "analysis_observed_outcomes",
+    "analysis_early_censored",
     "stage1_global_chisq",
     "stage1_global_df",
     "stage1_global_p",
@@ -472,9 +588,11 @@ summary_extra <- data.frame(
     NUM_TREES,
     NUM_THREADS,
     nrow(dat_all),
-    st1$gate$chisq,
-    st1$gate$df,
-    st1$gate$p_value,
+    sum(dat_all$R_h),
+    sum(dat_all$early_censored),
+    st1$global$chisq,
+    st1$global$df,
+    st1$global$p_value,
     mean(res$fixed_rule == "treat all"),
     mean(res$test_value_gain_vs_selected_fixed > 0),
     mean(res$np_feasible_tune)
@@ -486,11 +604,13 @@ summary_extra <- data.frame(
 )
 
 summary_df <- bind_rows(summary_metrics, summary_extra)
-write.csv(summary_df, "result/actg175_ipcw_validation_summary.csv", row.names = FALSE)
+summary_path <- file.path(OUT_DIR, "actg175_ipcw_validation_summary.csv")
+write.csv(summary_df, summary_path, row.names = FALSE)
 
+session_path <- file.path(OUT_DIR, "actg175_ipcw_validation_session_info.txt")
 capture.output(
   sessionInfo(),
-  file = "result/actg175_ipcw_validation_session_info.txt"
+  file = session_path
 )
 
 cat("\n[ACTG validation summary]\n")
@@ -498,7 +618,10 @@ print(summary_df)
 cat("\n[Stage 1 prespecified interaction intervals]\n")
 print(st1$option_c)
 cat("\n[Saved]\n")
-cat("- result/actg175_ipcw_validation_splits.csv\n")
-cat("- result/actg175_ipcw_validation_summary.csv\n")
-cat("- result/actg175_ipcw_stage1_effect_intervals.csv\n")
-cat("- result/actg175_ipcw_validation_session_info.txt\n")
+cat("- ", split_path, "\n", sep = "")
+cat("- ", summary_path, "\n", sep = "")
+cat("- ", stage1_path, "\n", sep = "")
+cat("- ", stage1_global_path, "\n", sep = "")
+cat("- ", stage1_boot_path, "\n", sep = "")
+cat("- ", stage1_cov_path, "\n", sep = "")
+cat("- ", session_path, "\n", sep = "")

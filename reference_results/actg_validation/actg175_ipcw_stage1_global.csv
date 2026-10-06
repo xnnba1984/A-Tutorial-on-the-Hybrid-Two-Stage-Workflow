@@ -1,0 +1,2 @@
+"chisq","df","p_value","bootstrap_B","bootstrap_valid","uncertainty_method"
+39.692727956349,16,0.000863160328614573,1000,1000,"patient-level bootstrap refitting censoring and outcome models"

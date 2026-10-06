@@ -1,0 +1,67 @@
+[
+  {
+    "figure": "Figure 1",
+    "output": "figures/Figure_1_revised.png",
+    "reference_dimensions": [
+      3240,
+      2520
+    ],
+    "rerun_dimensions": [
+      3240,
+      2520
+    ],
+    "identical_pixels": true
+  },
+  {
+    "figure": "Figure 2",
+    "output": "figures/Figure_2_revised.png",
+    "reference_dimensions": [
+      3240,
+      1844
+    ],
+    "rerun_dimensions": [
+      3240,
+      1844
+    ],
+    "identical_pixels": true
+  },
+  {
+    "figure": "Figure 3",
+    "output": "actg_crossfit/figures/actg175_figure3_ipcw.png",
+    "reference_dimensions": [
+      2160,
+      1695
+    ],
+    "rerun_dimensions": [
+      2160,
+      1695
+    ],
+    "identical_pixels": true
+  },
+  {
+    "figure": "Supplementary Figure S1",
+    "output": "figures/supplementary_figure_s1_constant_benefit_no_hte.png",
+    "reference_dimensions": [
+      3240,
+      2430
+    ],
+    "rerun_dimensions": [
+      3240,
+      2430
+    ],
+    "identical_pixels": true
+  },
+  {
+    "figure": "Supplementary Figure S2",
+    "output": "figures/supplementary_figure_s2_strong_qualitative_hte.png",
+    "reference_dimensions": [
+      3240,
+      2430
+    ],
+    "rerun_dimensions": [
+      3240,
+      2430
+    ],
+    "identical_pixels": true
+  }
+]

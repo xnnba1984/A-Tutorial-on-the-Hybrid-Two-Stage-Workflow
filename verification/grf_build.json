@@ -1,0 +1,10 @@
+{
+  "Package": "grf",
+  "Version": "2.4.0",
+  "Source": "https://cran.r-project.org/src/contrib/Archive/grf/grf_2.4.0.tar.gz",
+  "SourceSHA256": "b53fb9b27a9d2e0e4f9da46e787c317118ace9e45e659d128af2ed8ca9176bc5",
+  "Built": "R 4.5.2; aarch64-apple-darwin20; 2026-10-06 20:08:31 UTC; unix",
+  "Compiler": "Apple clang version 21.0.0 (clang-2100.1.1.101) Target: arm64-apple-darwin25.6.0 Thread model: posix InstalledDir: /Library/Developer/CommandLineTools/usr/bin",
+  "CXXFlags": "-ffp-contract=off",
+  "SharedLibrarySHA256": "5fd2443b8b053fb4e67491dc5c1ce1eb66f4fc28a38d7031b3efa92c9525693d"
+}

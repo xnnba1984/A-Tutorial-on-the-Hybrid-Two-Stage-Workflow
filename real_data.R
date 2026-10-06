@@ -26,11 +26,16 @@ suppressPackageStartupMessages({
 })
 
 if (!file.exists("data/ACTG175.csv")) {
-  stop("Run real_data.R from the project root containing data/ACTG175.csv.")
+  stop("Run real_data.R from the repository root containing data/ACTG175.csv.")
 }
 
-dir.create("result", showWarnings = FALSE)
-dir.create("result/figures", recursive = TRUE, showWarnings = FALSE)
+OUT_DIR <- Sys.getenv(
+  "ACTG_REALDATA_OUT_DIR",
+  file.path(getwd(), "result", "actg_crossfit")
+)
+FIGURE_DIR <- file.path(OUT_DIR, "figures")
+dir.create(OUT_DIR, recursive = TRUE, showWarnings = FALSE)
+dir.create(FIGURE_DIR, recursive = TRUE, showWarnings = FALSE)
 
 ## ---- 0-helpers ------------------------------------------------------------
 
@@ -97,10 +102,10 @@ df <- df_raw |>
     event_by_h = as.integer(!is.na(days) & !is.na(cens) &
                               days <= HORIZON_DAYS & cens == 1L),
     early_censored = as.integer(!is.na(days) & !is.na(cens) &
-                                  days <= HORIZON_DAYS & cens == 0L),
-    R_h = as.integer(event_by_h == 1L | days > HORIZON_DAYS),
+                                  days < HORIZON_DAYS & cens == 0L),
+    R_h = as.integer(event_by_h == 1L | days >= HORIZON_DAYS),
     Y = ifelse(event_by_h == 1L, 0,
-               ifelse(days > HORIZON_DAYS, 1, NA_real_)),
+               ifelse(days >= HORIZON_DAYS, 1, NA_real_)),
     censor_time = pmin(days, HORIZON_DAYS),
     censor_event = early_censored
   ) |>
@@ -187,14 +192,14 @@ vc_hc3 <- sandwich::vcovHC(lm_int, type = "HC3")
 interaction_terms <- grep("^A:", names(coef(lm_int)), value = TRUE)
 interaction_terms <- interaction_terms[!is.na(coef(lm_int)[interaction_terms])]
 
-gate_test <- car::linearHypothesis(
+stage1_global_test <- car::linearHypothesis(
   lm_int,
   paste0(interaction_terms, " = 0"),
   vcov. = vc_hc3,
   test = "Chisq",
   singular.ok = TRUE
 )
-gate_summary <- extract_chisq_test(gate_test)
+stage1_global_summary <- extract_chisq_test(stage1_global_test)
 
 coef_test <- lmtest::coeftest(lm_int, vcov. = vc_hc3)
 prespec <- intersect(c("cd40", "karnof"), X_names)
@@ -215,8 +220,8 @@ option_c <- lapply(prespec, function(x) {
   mutate(p_holm = p.adjust(p_raw, method = "holm"))
 
 cat(sprintf(
-  "\n[Stage 1] IPCW robust Wald gate: chi^2 = %.2f (df=%d), p = %.4g\n",
-  gate_summary$chisq, gate_summary$df, gate_summary$p_value
+  "\n[Stage 1] IPCW robust omnibus Wald test: chi^2 = %.2f (df=%d), p = %.4g\n",
+  stage1_global_summary$chisq, stage1_global_summary$df, stage1_global_summary$p_value
 ))
 cat("[Stage 1] Prespecified Option C terms with Holm adjustment:\n")
 print(option_c)
@@ -360,14 +365,27 @@ eval_df <- dat_all |>
 ## ---- 3-2-uplift -----------------------------------------------------------
 
 ord <- order(eval_df$tau_hat, decreasing = TRUE, na.last = NA)
+fraction_full <- seq_along(ord) / length(ord)
+U_full <- cumsum(eval_df$tau_dr[ord]) / length(ord)
+U_random_full <- fraction_full * mean(eval_df$tau_dr[ord])
+U_centered_full <- U_full - U_random_full
+fraction0 <- c(0, fraction_full)
+U0 <- c(0, U_full)
+U_centered0 <- c(0, U_centered_full)
+AUQC_raw <- sum(
+  diff(fraction0) * (U0[-1] + U0[-length(U0)]) / 2
+)
+AUQC_centered <- sum(
+  diff(fraction0) *
+    (U_centered0[-1] + U_centered0[-length(U_centered0)]) / 2
+)
+
 q_grid <- seq(0.05, 1, by = 0.05)
 nq <- pmax(1, floor(q_grid * n))
 U_q <- cumsum(eval_df$tau_dr[ord])[nq] / n
 U_random <- q_grid * mean(eval_df$tau_dr, na.rm = TRUE)
 U_centered <- U_q - U_random
 uplift_df <- data.frame(q = q_grid, U = U_q, U_random = U_random, U_centered = U_centered)
-AUQC_raw <- sum(U_q) * 0.05
-AUQC_centered <- sum(U_centered) * 0.05
 
 p_uplift <- ggplot(uplift_df, aes(q, U_centered)) +
   geom_line(linewidth = 0.7) +
@@ -478,7 +496,7 @@ np_df <- data.frame(
 ok <- which(!is.na(np_df$harm) & np_df$harm <= ALPHA_HARM)
 np_feasible <- length(ok) > 0
 if (np_feasible) {
-  idx_np <- ok[which.max(np_df$bene[ok])]
+  idx_np <- ok[which.max(val_grid[ok])]
 } else {
   idx_np <- which.min(np_df$harm)
 }
@@ -499,8 +517,8 @@ p_np <- ggplot(np_df, aes(harm, bene)) +
     hjust = 1,
     vjust = -0.2
   ) +
-  scale_x_continuous(name = "Harm rate", labels = pct_lab) +
-  scale_y_continuous(name = "Benefit capture", labels = pct_lab) +
+  scale_x_continuous(name = "Surrogate harm", labels = pct_lab) +
+  scale_y_continuous(name = "Surrogate benefit capture", labels = pct_lab) +
   theme_pub()
 
 if (np_feasible) {
@@ -553,7 +571,7 @@ figure3 <- gridExtra::arrangeGrob(
 )
 
 ggsave(
-  filename = "result/figures/actg175_figure3_ipcw.png",
+  filename = file.path(FIGURE_DIR, "actg175_figure3_ipcw.png"),
   plot = figure3,
   width = 7.2,
   height = 5.65,
@@ -576,7 +594,7 @@ summary_df <- data.frame(
     "stage1_global_chisq",
     "stage1_global_df",
     "stage1_global_p",
-    "stage1_proceed_alpha_0_05",
+    "stage1_reject_alpha_0_05",
     "centered_auqc",
     "raw_auqc",
     "uplift_at_1",
@@ -610,10 +628,10 @@ summary_df <- data.frame(
     length(X_names),
     min(dat_all$ipcw[dat_all$R_h == 1L]),
     max(dat_all$ipcw[dat_all$R_h == 1L]),
-    gate_summary$chisq,
-    gate_summary$df,
-    gate_summary$p_value,
-    as.integer(gate_summary$p_value < 0.05),
+    stage1_global_summary$chisq,
+    stage1_global_summary$df,
+    stage1_global_summary$p_value,
+    as.integer(stage1_global_summary$p_value < 0.05),
     AUQC_centered,
     AUQC_raw,
     tail(U_q, 1),
@@ -638,22 +656,22 @@ summary_df <- data.frame(
   )
 )
 
-write.csv(summary_df, "result/actg175_ipcw_summary.csv", row.names = FALSE)
-write.csv(option_c, "result/actg175_ipcw_optionC.csv", row.names = FALSE)
-write.csv(stepp_cd4, "result/actg175_ipcw_stepp_cd4.csv", row.names = FALSE)
-write.csv(stepp_karnof, "result/actg175_ipcw_stepp_karnofsky.csv", row.names = FALSE)
-write.csv(uplift_df, "result/actg175_ipcw_uplift_curve.csv", row.names = FALSE)
-write.csv(pv_df, "result/actg175_ipcw_policy_curve.csv", row.names = FALSE)
-write.csv(np_df, "result/actg175_ipcw_np_curve.csv", row.names = FALSE)
-write.csv(eval_df, "result/actg175_ipcw_eval.csv", row.names = FALSE)
+write.csv(summary_df, file.path(OUT_DIR, "actg175_ipcw_summary.csv"), row.names = FALSE)
+write.csv(option_c, file.path(OUT_DIR, "actg175_ipcw_optionC.csv"), row.names = FALSE)
+write.csv(stepp_cd4, file.path(OUT_DIR, "actg175_ipcw_stepp_cd4.csv"), row.names = FALSE)
+write.csv(stepp_karnof, file.path(OUT_DIR, "actg175_ipcw_stepp_karnofsky.csv"), row.names = FALSE)
+write.csv(uplift_df, file.path(OUT_DIR, "actg175_ipcw_uplift_curve.csv"), row.names = FALSE)
+write.csv(pv_df, file.path(OUT_DIR, "actg175_ipcw_policy_curve.csv"), row.names = FALSE)
+write.csv(np_df, file.path(OUT_DIR, "actg175_ipcw_np_curve.csv"), row.names = FALSE)
+write.csv(eval_df, file.path(OUT_DIR, "actg175_ipcw_eval.csv"), row.names = FALSE)
 
 capture.output(
   sessionInfo(),
-  file = "result/actg175_ipcw_session_info.txt"
+  file = file.path(OUT_DIR, "actg175_ipcw_session_info.txt")
 )
 
 cat("\n[Saved]\n")
-cat("- result/actg175_ipcw_summary.csv\n")
-cat("- result/actg175_ipcw_optionC.csv\n")
-cat("- result/figures/actg175_figure3_ipcw.png\n")
-cat("- result/actg175_ipcw_session_info.txt\n")
+cat("- ", file.path(OUT_DIR, "actg175_ipcw_summary.csv"), "\n", sep = "")
+cat("- ", file.path(OUT_DIR, "actg175_ipcw_optionC.csv"), "\n", sep = "")
+cat("- ", file.path(FIGURE_DIR, "actg175_figure3_ipcw.png"), "\n", sep = "")
+cat("- ", file.path(OUT_DIR, "actg175_ipcw_session_info.txt"), "\n", sep = "")

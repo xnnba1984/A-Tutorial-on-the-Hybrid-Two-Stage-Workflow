@@ -1,0 +1,516 @@
+{
+  "schema_version": 1,
+  "run_id": "3f4eed8e0fcd464d80e16736567796cd",
+  "root": "<REPOSITORY>",
+  "mode": "full",
+  "settings": {
+    "SIM_B_MAIN": "500",
+    "SIM_N_MAIN": "2000",
+    "SIM_TRUTH_N": "1000000",
+    "SBR_SENS_B": "300",
+    "SBR_SENS_TREES": "1000",
+    "SBR_SENS_CORES": "8",
+    "ACTG_VALIDATION_B": "200",
+    "ACTG_STAGE1_BOOT_B": "1000",
+    "ACTG_VALIDATION_TREES": "1500",
+    "ACTG_VALIDATION_THREADS": "8",
+    "SUPP_SINGLE_N": "2000"
+  },
+  "sources": {
+    "check_environment.R": "8ac4a29c23af535522eff13c4303400d578f000c94ab01e07b66b717ebb4df56",
+    "prepare_data.R": "f8d8e3b4784134b2078b98aa7f1250fe5e075b682aa693902346363e85d34f80",
+    "sim_1.R": "f8beb568631efb8a874cb66bc383ee52c67355193b49a263d6e404af5fdf6af0",
+    "sim_truth_summary.R": "5f76c56f3efcfbeb0552c172c2f1ffb90671051093303f6fb3d31f3bffd50491",
+    "sim_sensitivity.R": "f180048f089ca19a3e8c40a1038be9fd22c6c135ef3c4ae1a51a568ec589a1c8",
+    "real_data.R": "9c1324648aeb57e0a1003b1a9c0884a954fd4587f314f325f90e1cdeeb9ef9f2",
+    "actg_validation_uncertainty.R": "58c83c4ed4fda5ccbf55f8803ecfea6fb0926a1db77293e8abb0727f654d9240",
+    "prepare_revision_outputs.py": "06e18707c98169467408d9d79762c167192a0258dfcb4a84406a28597d4f0c26",
+    "make_simulation_figure2.R": "f938f66c9d597d3be3f525b541af8faaf9ced34d1207dcb771f6f9ce286925b4",
+    "make_supplementary_single_replicate_figures.R": "83be941a64dca64703551cb42b0a03e0ea989dc0f39a0c3d07b042b9bbe24a83",
+    "make_framework_figure1.py": "1c3fa7cb7d4640b0a3b66d46d3e22e106c87ecd768a4b4bf7096aa208070eaa1",
+    "reproduce.py": "4fd8e088833699f85fc2e8279be8c4b068f5482a1f37bb45dd103c22e43910e4",
+    "verify_results.py": "51dea5736cbb39979c8214367a995e9d72817e2342fc7911f65a8ee59fa7924a",
+    "reproduction_inventory.py": "e4e1f9f2aa92847414bd121837eeecf89963dea19f6b4153ff7e13a8dfb6841b",
+    "requirements.txt": "41b54a6fb2918667ca47a61d73b522629d84490f3d78f0f20b21135faba10d35",
+    "renv.lock": "772fb55ef8d3e9113a77af8bf5c7663a0ec05eaaee785efbfd58cd1532b2525a",
+    "environment_versions.csv": "b96f98444d97ba2777a8c3e2c4eb9f3cfd995193895994a0a9859e09ffad1cf7"
+  },
+  "runtime": {
+    "python": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+    "python_executable": "<HOME>/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "pillow": "12.3.0",
+    "fonts": {
+      "regular": {
+        "path": "/System/Library/Fonts/Supplemental/Times New Roman.ttf",
+        "sha256": "f3b4ffff71c2a0c7227d37497683b2498fb2d0a4e8beae26f022e3ccfcaabfa3"
+      },
+      "bold": {
+        "path": "/System/Library/Fonts/Supplemental/Times New Roman Bold.ttf",
+        "sha256": "50f5b1f27b7d34621090e437e8b1dd4510a22d2823fc876b3286bed327b64bbb"
+      },
+      "small": {
+        "path": "/System/Library/Fonts/Supplemental/Times New Roman.ttf",
+        "sha256": "f3b4ffff71c2a0c7227d37497683b2498fb2d0a4e8beae26f022e3ccfcaabfa3"
+      }
+    },
+    "r_launcher": "<LOCAL_QC>/99_tracking/run_r45_local.sh",
+    "r_launcher_sha256": "62ef5b3ac77d388d320b9f5e8a16b75229f373514d1e6b7937eb77fa5fa6606f",
+    "r_script_first_wrapper": true,
+    "r_environment": {
+      "R_PROFILE": "/dev/null",
+      "R_PROFILE_USER": "/dev/null",
+      "R_ENVIRON": "/dev/null",
+      "R_ENVIRON_USER": "/dev/null",
+      "R_HOME": null,
+      "R_LIBS": "",
+      "R_LIBS_USER": "<REPOSITORY>/renv/library",
+      "R_LIBS_SITE": "",
+      "R_DEFAULT_PACKAGES": "datasets,utils,grDevices,graphics,stats,methods",
+      "R_TESTS": ""
+    }
+  },
+  "reference_manifest_sha256": "65c0b1bef50b41438950f1ee301b9e86c9c76ee7273f2ae052f0b12256acde07",
+  "stages": {
+    "environment": {
+      "run_id": "3f4eed8e0fcd464d80e16736567796cd",
+      "attempt_id": "c233ccd316214f608d113d5ecdc33a75",
+      "status": "complete",
+      "script": "check_environment.R",
+      "script_sha256": "8ac4a29c23af535522eff13c4303400d578f000c94ab01e07b66b717ebb4df56",
+      "settings": {
+        "SIM_B_MAIN": "500",
+        "SIM_N_MAIN": "2000",
+        "SIM_TRUTH_N": "1000000",
+        "SBR_SENS_B": "300",
+        "SBR_SENS_TREES": "1000",
+        "SBR_SENS_CORES": "8",
+        "ACTG_VALIDATION_B": "200",
+        "ACTG_STAGE1_BOOT_B": "1000",
+        "ACTG_VALIDATION_TREES": "1500",
+        "ACTG_VALIDATION_THREADS": "8",
+        "SUPP_SINGLE_N": "2000"
+      },
+      "command": [
+        "<LOCAL_QC>/99_tracking/run_r45_local.sh",
+        "check_environment.R"
+      ],
+      "inputs": {},
+      "dependency_attempts": {},
+      "outputs": {
+        "result/package_versions.csv": "47f8e566a52e212ec731f8acc6640773c692c4a83dab364b82627707fb6552ac",
+        "result/session_info.txt": "1c423dfbef091ad6ff2180e85da348d8df7e4db1329cfb548a5752bfe07dbfd2"
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 1.064,
+      "log_sha256": "9c477d02d38fa7ef2b6472a4b39bf0cd2238e9bce4dbeb6bf3876d7a65f4cad6"
+    },
+    "data": {
+      "run_id": "3f4eed8e0fcd464d80e16736567796cd",
+      "attempt_id": "f5b4c253c9054b3f8d7233b5086b455b",
+      "status": "complete",
+      "script": "prepare_data.R",
+      "script_sha256": "f8d8e3b4784134b2078b98aa7f1250fe5e075b682aa693902346363e85d34f80",
+      "settings": {
+        "SIM_B_MAIN": "500",
+        "SIM_N_MAIN": "2000",
+        "SIM_TRUTH_N": "1000000",
+        "SBR_SENS_B": "300",
+        "SBR_SENS_TREES": "1000",
+        "SBR_SENS_CORES": "8",
+        "ACTG_VALIDATION_B": "200",
+        "ACTG_STAGE1_BOOT_B": "1000",
+        "ACTG_VALIDATION_TREES": "1500",
+        "ACTG_VALIDATION_THREADS": "8",
+        "SUPP_SINGLE_N": "2000"
+      },
+      "command": [
+        "<LOCAL_QC>/99_tracking/run_r45_local.sh",
+        "prepare_data.R"
+      ],
+      "inputs": {
+        "result/package_versions.csv": "47f8e566a52e212ec731f8acc6640773c692c4a83dab364b82627707fb6552ac",
+        "result/session_info.txt": "1c423dfbef091ad6ff2180e85da348d8df7e4db1329cfb548a5752bfe07dbfd2"
+      },
+      "dependency_attempts": {
+        "environment": "c233ccd316214f608d113d5ecdc33a75"
+      },
+      "outputs": {
+        "data/ACTG175.csv": "debab27bbc6f741724b79e49a8e13e1feb8db57850b17010b0635202bfc7141a"
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 1.256,
+      "log_sha256": "e06e54747b89056461319f6bba3ca7445e807ff22317e2d10165af7a848656f5"
+    },
+    "main": {
+      "run_id": "3f4eed8e0fcd464d80e16736567796cd",
+      "attempt_id": "afdfc8130ec34ad1a558db7ff5b705df",
+      "status": "complete",
+      "script": "sim_1.R",
+      "script_sha256": "f8beb568631efb8a874cb66bc383ee52c67355193b49a263d6e404af5fdf6af0",
+      "settings": {
+        "SIM_B_MAIN": "500",
+        "SIM_N_MAIN": "2000",
+        "SIM_TRUTH_N": "1000000",
+        "SBR_SENS_B": "300",
+        "SBR_SENS_TREES": "1000",
+        "SBR_SENS_CORES": "8",
+        "ACTG_VALIDATION_B": "200",
+        "ACTG_STAGE1_BOOT_B": "1000",
+        "ACTG_VALIDATION_TREES": "1500",
+        "ACTG_VALIDATION_THREADS": "8",
+        "SUPP_SINGLE_N": "2000"
+      },
+      "command": [
+        "<LOCAL_QC>/99_tracking/run_r45_local.sh",
+        "sim_1.R"
+      ],
+      "inputs": {
+        "result/package_versions.csv": "47f8e566a52e212ec731f8acc6640773c692c4a83dab364b82627707fb6552ac",
+        "result/session_info.txt": "1c423dfbef091ad6ff2180e85da348d8df7e4db1329cfb548a5752bfe07dbfd2"
+      },
+      "dependency_attempts": {
+        "environment": "c233ccd316214f608d113d5ecdc33a75"
+      },
+      "outputs": {
+        "result/sim_main_SiM.csv": "9f5ee00863dd2890f473f205f3e7764dc2653516cb6ee8fa543d241200347e64",
+        "result/sim_main_SiM_summary.csv": "c46cb1eb967f4a26dc80a356c7f39cb3a520bb35bed7f27ef0772cfb152d4583"
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 599.219,
+      "log_sha256": "2a0f4579daf6bee7a749299192e4d8846dd6cbba6ee4f7e367da0bcbdce279eb"
+    },
+    "truth": {
+      "run_id": "3f4eed8e0fcd464d80e16736567796cd",
+      "attempt_id": "83f27f01e58642cdab5cc5852ffa832a",
+      "status": "complete",
+      "script": "sim_truth_summary.R",
+      "script_sha256": "5f76c56f3efcfbeb0552c172c2f1ffb90671051093303f6fb3d31f3bffd50491",
+      "settings": {
+        "SIM_B_MAIN": "500",
+        "SIM_N_MAIN": "2000",
+        "SIM_TRUTH_N": "1000000",
+        "SBR_SENS_B": "300",
+        "SBR_SENS_TREES": "1000",
+        "SBR_SENS_CORES": "8",
+        "ACTG_VALIDATION_B": "200",
+        "ACTG_STAGE1_BOOT_B": "1000",
+        "ACTG_VALIDATION_TREES": "1500",
+        "ACTG_VALIDATION_THREADS": "8",
+        "SUPP_SINGLE_N": "2000"
+      },
+      "command": [
+        "<LOCAL_QC>/99_tracking/run_r45_local.sh",
+        "sim_truth_summary.R"
+      ],
+      "inputs": {
+        "result/package_versions.csv": "47f8e566a52e212ec731f8acc6640773c692c4a83dab364b82627707fb6552ac",
+        "result/session_info.txt": "1c423dfbef091ad6ff2180e85da348d8df7e4db1329cfb548a5752bfe07dbfd2"
+      },
+      "dependency_attempts": {
+        "environment": "c233ccd316214f608d113d5ecdc33a75"
+      },
+      "outputs": {
+        "result/sim_truth_summary_step6.csv": "fd6a244824a49037f6d4ac4999762de3add596679307240426b14450dd779751"
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.582,
+      "log_sha256": "d4231d1562b742a3d410ce2a03d80a348d4b31580b07632f57ca971460349a71"
+    },
+    "sensitivity": {
+      "run_id": "3f4eed8e0fcd464d80e16736567796cd",
+      "attempt_id": "10d1e840bd0c4ea98efb57bf5e4098df",
+      "status": "complete",
+      "script": "sim_sensitivity.R",
+      "script_sha256": "f180048f089ca19a3e8c40a1038be9fd22c6c135ef3c4ae1a51a568ec589a1c8",
+      "settings": {
+        "SIM_B_MAIN": "500",
+        "SIM_N_MAIN": "2000",
+        "SIM_TRUTH_N": "1000000",
+        "SBR_SENS_B": "300",
+        "SBR_SENS_TREES": "1000",
+        "SBR_SENS_CORES": "8",
+        "ACTG_VALIDATION_B": "200",
+        "ACTG_STAGE1_BOOT_B": "1000",
+        "ACTG_VALIDATION_TREES": "1500",
+        "ACTG_VALIDATION_THREADS": "8",
+        "SUPP_SINGLE_N": "2000"
+      },
+      "command": [
+        "<LOCAL_QC>/99_tracking/run_r45_local.sh",
+        "sim_sensitivity.R"
+      ],
+      "inputs": {
+        "result/package_versions.csv": "47f8e566a52e212ec731f8acc6640773c692c4a83dab364b82627707fb6552ac",
+        "result/session_info.txt": "1c423dfbef091ad6ff2180e85da348d8df7e4db1329cfb548a5752bfe07dbfd2"
+      },
+      "dependency_attempts": {
+        "environment": "c233ccd316214f608d113d5ecdc33a75"
+      },
+      "outputs": {
+        "result/information_sensitivity/sim_information_sensitivity_raw.csv": "4c7baec9d29ec00557f1224537a0ff8545d48e5898a112761646907726f6e029",
+        "result/information_sensitivity/sim_information_sensitivity_summary.csv": "710e4bb3d828cf184b7666739e6a07da42b2948a140c0ee11b053a2f582324c6",
+        "result/information_sensitivity/sim_information_sensitivity_session_info.txt": "659b309d3feffa27acc070688d34c3e221a0356d6783deee9645babc3b08795b"
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 405.529,
+      "log_sha256": "a54052a6d2d80ffa40997249f08b5387caaef3a6e761fd66e3d73b1c07068104"
+    },
+    "actg_crossfit": {
+      "run_id": "3f4eed8e0fcd464d80e16736567796cd",
+      "attempt_id": "c4ad593fcc264714b4790fbf1dde1568",
+      "status": "complete",
+      "script": "real_data.R",
+      "script_sha256": "9c1324648aeb57e0a1003b1a9c0884a954fd4587f314f325f90e1cdeeb9ef9f2",
+      "settings": {
+        "SIM_B_MAIN": "500",
+        "SIM_N_MAIN": "2000",
+        "SIM_TRUTH_N": "1000000",
+        "SBR_SENS_B": "300",
+        "SBR_SENS_TREES": "1000",
+        "SBR_SENS_CORES": "8",
+        "ACTG_VALIDATION_B": "200",
+        "ACTG_STAGE1_BOOT_B": "1000",
+        "ACTG_VALIDATION_TREES": "1500",
+        "ACTG_VALIDATION_THREADS": "8",
+        "SUPP_SINGLE_N": "2000"
+      },
+      "command": [
+        "<LOCAL_QC>/99_tracking/run_r45_local.sh",
+        "real_data.R"
+      ],
+      "inputs": {
+        "result/package_versions.csv": "47f8e566a52e212ec731f8acc6640773c692c4a83dab364b82627707fb6552ac",
+        "result/session_info.txt": "1c423dfbef091ad6ff2180e85da348d8df7e4db1329cfb548a5752bfe07dbfd2",
+        "data/ACTG175.csv": "debab27bbc6f741724b79e49a8e13e1feb8db57850b17010b0635202bfc7141a"
+      },
+      "dependency_attempts": {
+        "environment": "c233ccd316214f608d113d5ecdc33a75",
+        "data": "f5b4c253c9054b3f8d7233b5086b455b"
+      },
+      "outputs": {
+        "result/actg_crossfit/actg175_ipcw_summary.csv": "0918c1d75e0e71e2422db011777f6024997d898dac78d8c6dfcc752d0117da0d",
+        "result/actg_crossfit/actg175_ipcw_optionC.csv": "f0c89e2b85172d187d37ffa5b6829c7477adb55d615c2f53d0b352572a85eb92",
+        "result/actg_crossfit/actg175_ipcw_stepp_cd4.csv": "f64889ce070e47612af5d3ffa28fa4fb3b27b1e5492aaab197dc8d61be76b6b4",
+        "result/actg_crossfit/actg175_ipcw_stepp_karnofsky.csv": "34880dd920635c3133715fc11fe7798235753a0dab2a394e28a93ddb7d20406b",
+        "result/actg_crossfit/actg175_ipcw_uplift_curve.csv": "aa243a7c721c5de8a444059a4a61d196021d62c3dfc83c2cc931b0555aa9e8bb",
+        "result/actg_crossfit/actg175_ipcw_policy_curve.csv": "d97b28941d7ea584129f9f6a0b788eeceebcbc77140810857d1dc60159293eb3",
+        "result/actg_crossfit/actg175_ipcw_np_curve.csv": "a92c755e7e01da453f2ccfeb624546fadd0e0468292f74dc2da0fb6aad32c88c",
+        "result/actg_crossfit/actg175_ipcw_eval.csv": "e639e381575a48c0cd9e54c60f1b3544e67d56cabf0014e8e5d2e1a3eb42f31e",
+        "result/actg_crossfit/actg175_ipcw_session_info.txt": "35e7eba6ece283e0dd76597ed450cf97349ff82bd2bc9fa7b5c8552285b3fdc0",
+        "result/actg_crossfit/figures/actg175_figure3_ipcw.png": "caff9237533f7514bc19192a3b38caa4abed5d810ca959cd5d4a0bf3d6737b9d"
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 3.121,
+      "log_sha256": "6ba304674d3d448fa8ff23f8b4ccf173fe343573d6c5b6e0b0d0372518b2e843"
+    },
+    "actg_validation": {
+      "run_id": "3f4eed8e0fcd464d80e16736567796cd",
+      "attempt_id": "95bf21e891214b63aba05e5a8191257a",
+      "status": "complete",
+      "script": "actg_validation_uncertainty.R",
+      "script_sha256": "58c83c4ed4fda5ccbf55f8803ecfea6fb0926a1db77293e8abb0727f654d9240",
+      "settings": {
+        "SIM_B_MAIN": "500",
+        "SIM_N_MAIN": "2000",
+        "SIM_TRUTH_N": "1000000",
+        "SBR_SENS_B": "300",
+        "SBR_SENS_TREES": "1000",
+        "SBR_SENS_CORES": "8",
+        "ACTG_VALIDATION_B": "200",
+        "ACTG_STAGE1_BOOT_B": "1000",
+        "ACTG_VALIDATION_TREES": "1500",
+        "ACTG_VALIDATION_THREADS": "8",
+        "SUPP_SINGLE_N": "2000"
+      },
+      "command": [
+        "<LOCAL_QC>/99_tracking/run_r45_local.sh",
+        "actg_validation_uncertainty.R"
+      ],
+      "inputs": {
+        "result/package_versions.csv": "47f8e566a52e212ec731f8acc6640773c692c4a83dab364b82627707fb6552ac",
+        "result/session_info.txt": "1c423dfbef091ad6ff2180e85da348d8df7e4db1329cfb548a5752bfe07dbfd2",
+        "data/ACTG175.csv": "debab27bbc6f741724b79e49a8e13e1feb8db57850b17010b0635202bfc7141a"
+      },
+      "dependency_attempts": {
+        "environment": "c233ccd316214f608d113d5ecdc33a75",
+        "data": "f5b4c253c9054b3f8d7233b5086b455b"
+      },
+      "outputs": {
+        "result/actg_validation/actg175_ipcw_stage1_effect_intervals.csv": "589d5179d92c345dae34d5027c8eedd489474126e5cea40beb7c4e7fe242d0a3",
+        "result/actg_validation/actg175_ipcw_stage1_global.csv": "ad5c1f09d06bdc451b8d96e3290231202c0b8c2f95778cc0b369ce1062161b33",
+        "result/actg_validation/actg175_ipcw_stage1_bootstrap_coefficients.csv": "aa894c3967e2c21d446cc45672025756179f38ff2ade5eca5804417c1d9e313f",
+        "result/actg_validation/actg175_ipcw_stage1_bootstrap_covariance.csv": "d1fe98eb5df500997de8935c072694108b56582a45b6cd5c162fb32d5b9bf7c4",
+        "result/actg_validation/actg175_ipcw_validation_splits.csv": "19f6f1625ed38ed473779f11c1ef0595600b04f7e4dd5d1898a4dbf9204b5896",
+        "result/actg_validation/actg175_ipcw_validation_summary.csv": "bddad50bc821def9b01762ed7661f409b14fd9643f1709938f5cfc05af720387",
+        "result/actg_validation/actg175_ipcw_validation_session_info.txt": "d626aec183c68f40620c37861f735c15c41631ea6144902b130007eaedf8c063"
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 43.021,
+      "log_sha256": "3a31a252ba51507bc0734aa1e96f6c0b16ca7fbbd291f535a2d749911d3701a3"
+    },
+    "tables": {
+      "run_id": "3f4eed8e0fcd464d80e16736567796cd",
+      "attempt_id": "c752769ea038499f97ee9d1659621ba8",
+      "status": "complete",
+      "script": "prepare_revision_outputs.py",
+      "script_sha256": "06e18707c98169467408d9d79762c167192a0258dfcb4a84406a28597d4f0c26",
+      "settings": {
+        "SIM_B_MAIN": "500",
+        "SIM_N_MAIN": "2000",
+        "SIM_TRUTH_N": "1000000",
+        "SBR_SENS_B": "300",
+        "SBR_SENS_TREES": "1000",
+        "SBR_SENS_CORES": "8",
+        "ACTG_VALIDATION_B": "200",
+        "ACTG_STAGE1_BOOT_B": "1000",
+        "ACTG_VALIDATION_TREES": "1500",
+        "ACTG_VALIDATION_THREADS": "8",
+        "SUPP_SINGLE_N": "2000"
+      },
+      "command": [
+        "<HOME>/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "prepare_revision_outputs.py"
+      ],
+      "inputs": {
+        "result/information_sensitivity/sim_information_sensitivity_raw.csv": "4c7baec9d29ec00557f1224537a0ff8545d48e5898a112761646907726f6e029",
+        "result/information_sensitivity/sim_information_sensitivity_summary.csv": "710e4bb3d828cf184b7666739e6a07da42b2948a140c0ee11b053a2f582324c6",
+        "result/information_sensitivity/sim_information_sensitivity_session_info.txt": "659b309d3feffa27acc070688d34c3e221a0356d6783deee9645babc3b08795b",
+        "result/actg_validation/actg175_ipcw_stage1_effect_intervals.csv": "589d5179d92c345dae34d5027c8eedd489474126e5cea40beb7c4e7fe242d0a3",
+        "result/actg_validation/actg175_ipcw_stage1_global.csv": "ad5c1f09d06bdc451b8d96e3290231202c0b8c2f95778cc0b369ce1062161b33",
+        "result/actg_validation/actg175_ipcw_stage1_bootstrap_coefficients.csv": "aa894c3967e2c21d446cc45672025756179f38ff2ade5eca5804417c1d9e313f",
+        "result/actg_validation/actg175_ipcw_stage1_bootstrap_covariance.csv": "d1fe98eb5df500997de8935c072694108b56582a45b6cd5c162fb32d5b9bf7c4",
+        "result/actg_validation/actg175_ipcw_validation_splits.csv": "19f6f1625ed38ed473779f11c1ef0595600b04f7e4dd5d1898a4dbf9204b5896",
+        "result/actg_validation/actg175_ipcw_validation_summary.csv": "bddad50bc821def9b01762ed7661f409b14fd9643f1709938f5cfc05af720387",
+        "result/actg_validation/actg175_ipcw_validation_session_info.txt": "d626aec183c68f40620c37861f735c15c41631ea6144902b130007eaedf8c063"
+      },
+      "dependency_attempts": {
+        "sensitivity": "10d1e840bd0c4ea98efb57bf5e4098df",
+        "actg_validation": "95bf21e891214b63aba05e5a8191257a"
+      },
+      "outputs": {
+        "result/information_sensitivity/supplementary_table_s2.csv": "38016628245372ab20a0959cecdfb17e3ed730952a07f5015346fcc0e514fddb",
+        "result/revision_analysis_audit.md": "43de32ede057b2a3e8bd680d8cce2e64955c586129bc818ab281d53c8d49a14c"
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.036,
+      "log_sha256": "481da9b25f06e4d3f618607a3d982e913dadcc2ed8d51d1c156e7502da784104"
+    },
+    "figure2": {
+      "run_id": "3f4eed8e0fcd464d80e16736567796cd",
+      "attempt_id": "8a98195c920440f1b8b538686822fc38",
+      "status": "complete",
+      "script": "make_simulation_figure2.R",
+      "script_sha256": "f938f66c9d597d3be3f525b541af8faaf9ced34d1207dcb771f6f9ce286925b4",
+      "settings": {
+        "SIM_B_MAIN": "500",
+        "SIM_N_MAIN": "2000",
+        "SIM_TRUTH_N": "1000000",
+        "SBR_SENS_B": "300",
+        "SBR_SENS_TREES": "1000",
+        "SBR_SENS_CORES": "8",
+        "ACTG_VALIDATION_B": "200",
+        "ACTG_STAGE1_BOOT_B": "1000",
+        "ACTG_VALIDATION_TREES": "1500",
+        "ACTG_VALIDATION_THREADS": "8",
+        "SUPP_SINGLE_N": "2000"
+      },
+      "command": [
+        "<LOCAL_QC>/99_tracking/run_r45_local.sh",
+        "make_simulation_figure2.R"
+      ],
+      "inputs": {
+        "result/sim_main_SiM.csv": "9f5ee00863dd2890f473f205f3e7764dc2653516cb6ee8fa543d241200347e64",
+        "result/sim_main_SiM_summary.csv": "c46cb1eb967f4a26dc80a356c7f39cb3a520bb35bed7f27ef0772cfb152d4583"
+      },
+      "dependency_attempts": {
+        "main": "afdfc8130ec34ad1a558db7ff5b705df"
+      },
+      "outputs": {
+        "result/figures/Figure_2_revised.png": "c4420861724f698b394255ebd541894a3f4157c0402c7528e59d17f7234cb9f7"
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.699,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "supplementary_figures": {
+      "run_id": "3f4eed8e0fcd464d80e16736567796cd",
+      "attempt_id": "fb003edc09754c8c932581cb7a03b36e",
+      "status": "complete",
+      "script": "make_supplementary_single_replicate_figures.R",
+      "script_sha256": "83be941a64dca64703551cb42b0a03e0ea989dc0f39a0c3d07b042b9bbe24a83",
+      "settings": {
+        "SIM_B_MAIN": "500",
+        "SIM_N_MAIN": "2000",
+        "SIM_TRUTH_N": "1000000",
+        "SBR_SENS_B": "300",
+        "SBR_SENS_TREES": "1000",
+        "SBR_SENS_CORES": "8",
+        "ACTG_VALIDATION_B": "200",
+        "ACTG_STAGE1_BOOT_B": "1000",
+        "ACTG_VALIDATION_TREES": "1500",
+        "ACTG_VALIDATION_THREADS": "8",
+        "SUPP_SINGLE_N": "2000"
+      },
+      "command": [
+        "<LOCAL_QC>/99_tracking/run_r45_local.sh",
+        "make_supplementary_single_replicate_figures.R"
+      ],
+      "inputs": {
+        "result/package_versions.csv": "47f8e566a52e212ec731f8acc6640773c692c4a83dab364b82627707fb6552ac",
+        "result/session_info.txt": "1c423dfbef091ad6ff2180e85da348d8df7e4db1329cfb548a5752bfe07dbfd2"
+      },
+      "dependency_attempts": {
+        "environment": "c233ccd316214f608d113d5ecdc33a75"
+      },
+      "outputs": {
+        "result/supplementary_single_replicate_summary.csv": "0d7cedfdefb7c5f5900e59f6314f9e04ffa8730a54a893c533c3089ed550fc3c",
+        "result/figures/supplementary_figure_s1_constant_benefit_no_hte.png": "63002cfdf25c2599f2bf0abec64af931f2177f98677817deec2d459ea5eedc21",
+        "result/figures/supplementary_figure_s2_strong_qualitative_hte.png": "7a9025485aff89f9955f5be739e1cc87c599c53e752819a9bcbe245e440d50a2"
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 2.161,
+      "log_sha256": "3fc2d7990594f6332bce23b7fbfa00b2d312f68727950eb83879b1422fe25590"
+    },
+    "figure1": {
+      "run_id": "3f4eed8e0fcd464d80e16736567796cd",
+      "attempt_id": "5b1dfad7cc3b44038a58de09bb0ea995",
+      "status": "complete",
+      "script": "make_framework_figure1.py",
+      "script_sha256": "1c3fa7cb7d4640b0a3b66d46d3e22e106c87ecd768a4b4bf7096aa208070eaa1",
+      "settings": {
+        "SIM_B_MAIN": "500",
+        "SIM_N_MAIN": "2000",
+        "SIM_TRUTH_N": "1000000",
+        "SBR_SENS_B": "300",
+        "SBR_SENS_TREES": "1000",
+        "SBR_SENS_CORES": "8",
+        "ACTG_VALIDATION_B": "200",
+        "ACTG_STAGE1_BOOT_B": "1000",
+        "ACTG_VALIDATION_TREES": "1500",
+        "ACTG_VALIDATION_THREADS": "8",
+        "SUPP_SINGLE_N": "2000"
+      },
+      "command": [
+        "<HOME>/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "make_framework_figure1.py"
+      ],
+      "inputs": {
+        "result/package_versions.csv": "47f8e566a52e212ec731f8acc6640773c692c4a83dab364b82627707fb6552ac",
+        "result/session_info.txt": "1c423dfbef091ad6ff2180e85da348d8df7e4db1329cfb548a5752bfe07dbfd2"
+      },
+      "dependency_attempts": {
+        "environment": "c233ccd316214f608d113d5ecdc33a75"
+      },
+      "outputs": {
+        "result/figures/Figure_1_revised.png": "992c32770681ab725b8d398519ac599a91a40955f1851736e687887ae3b34b45"
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.236,
+      "log_sha256": "589f0f1a05368fdb2ad55f8ffbe8e76b0da52669449426132faf4f378b67abc2"
+    }
+  },
+  "status": "complete",
+  "data_source_tarball": null
+}

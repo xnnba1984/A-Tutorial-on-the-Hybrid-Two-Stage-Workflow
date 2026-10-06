@@ -1,4 +1,5 @@
-setwd("~/Library/CloudStorage/Box-Box/Xi/HT_vs_ML")
+## Run from the repository root. The Monte Carlo size and sample size can be
+## overridden with SIM_B_MAIN and SIM_N_MAIN.
 set.seed(2025)
 
 suppressPackageStartupMessages({
@@ -9,6 +10,8 @@ suppressPackageStartupMessages({
   library(dplyr)
   library(scales)
 })
+
+dir.create("result", recursive = TRUE, showWarnings = FALSE)
 
 logit  <- function(p) log(p / (1 - p))
 expit  <- function(z) 1 / (1 + exp(-z))
@@ -310,9 +313,9 @@ run_stage1 <- function(dat) {
   names(p_int) <- sub("^A:", "", names(beta_ax))
   p_holm <- p.adjust(p_int, method = "holm")
   
-  # Confirmatory Stage 1 gate: proceed only if the omnibus Option A test rejects.
-  # Holm-adjusted Option C tests are reported to localize the signal after the gate opens.
-  proceed <- (p_global < 0.05)
+  # Record the prespecified omnibus Stage 1 rejection separately from Stage 2.
+  # Holm-adjusted Option C tests are secondary candidate modifier assessments.
+  stage1_reject <- (p_global < 0.05)
   
   # STEPP-like windowed risk difference along X1
   df_stepp <- stepp_df(X1 = dat$X1, A = A, Y = Y)
@@ -321,7 +324,7 @@ run_stage1 <- function(dat) {
     p_global = p_global,
     p_int    = p_int,
     p_holm   = p_holm,
-    proceed  = proceed,
+    stage1_reject = stage1_reject,
     df_stepp = df_stepp
   )
 }
@@ -688,7 +691,7 @@ run_mc_scenario <- function(sim_fun,
       replicate      = b,
       p_global       = st1$p_global,
       min_p_holm     = min(st1$p_holm),
-      proceed        = as.integer(st1$proceed),
+      stage1_reject  = as.integer(st1$stage1_reject),
       AUQC           = st2$AUQC,
       AUQC_raw       = st2$AUQC_raw,
       value_gain_all = st2$value_gain_all,
@@ -739,8 +742,8 @@ mc_summary <- mc_all %>%
   summarise(
     n = first(n),
     B = n(),
-    proceed_rate = mean(proceed),
-    se_proceed_rate = mc_se(proceed),
+    stage1_rejection_rate = mean(stage1_reject),
+    se_stage1_rejection_rate = mc_se(stage1_reject),
     any_holm_rate = mean(min_p_holm < 0.05),
     mean_AUQC = mean(AUQC),
     se_AUQC = mc_se(AUQC),

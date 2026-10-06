@@ -1,0 +1,3 @@
+"figure","scenario","seed","n","p_global","proceed","centered_AUQC","raw_AUQC","value_gain_vs_selected_fixed","selected_fixed_treat","learned_treat_fraction","truth_value_gain_learned","NP_feasible","NP_harm_upper_test","NP_benefit_capture_test"
+"supplementary_figure_s1_constant_benefit_no_hte.png","Constant benefit without HTE",20260516,2000,0.358607804581717,FALSE,0.00852034662919572,0.0449025209133186,-0.00118902741975191,1,0.688,-0.01248,FALSE,0.49751955972647,0.22
+"supplementary_figure_s2_strong_qualitative_hte.png","Strong qualitative HTE",20260517,2000,2.53581929804991e-06,TRUE,0.0263973082404548,0.0466121129862219,0.0416353044507257,0,0.248,0.0247630833608722,FALSE,0.532562172128103,0.074

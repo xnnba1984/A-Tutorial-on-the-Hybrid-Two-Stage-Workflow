@@ -3,8 +3,6 @@ suppressPackageStartupMessages({
   library(gridExtra)
 })
 
-setwd("~/Library/CloudStorage/Box-Box/Xi/HT_vs_ML")
-
 source_prefix <- readLines("sim_1.R", warn = FALSE)
 cut_at <- grep("^## ---- 5-mc-wrapper", source_prefix)
 if (length(cut_at) != 1L) {
@@ -12,8 +10,14 @@ if (length(cut_at) != 1L) {
 }
 eval(parse(text = paste(source_prefix[seq_len(cut_at - 1L)], collapse = "\n")))
 
-out_dir <- "result/figures"
+single_n <- as.integer(Sys.getenv("SUPP_SINGLE_N", "2000"))
+out_dir <- Sys.getenv("SUPP_FIGURE_OUT_DIR", "result/figures")
+summary_path <- Sys.getenv(
+  "SUPP_SUMMARY_OUT",
+  "result/supplementary_single_replicate_summary.csv"
+)
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
+dir.create(dirname(summary_path), recursive = TRUE, showWarnings = FALSE)
 
 equalize_plot_grobs <- function(plots) {
   grobs <- lapply(plots, ggplotGrob)
@@ -30,7 +34,7 @@ make_single <- function(sim_fun, label, seed, output) {
   set.seed(seed)
   out <- plot_single_trial(
     sim_fun = sim_fun,
-    n = 2000,
+    n = single_n,
     delta = 0.03,
     alpha_harm = 0.10,
     main_label = "",
@@ -55,7 +59,7 @@ make_single <- function(sim_fun, label, seed, output) {
     seed = seed,
     n = length(out$dat$Y),
     p_global = out$st1$p_global,
-    proceed = out$st1$proceed,
+    stage1_reject = out$st1$stage1_reject,
     centered_AUQC = out$st2$AUQC,
     raw_AUQC = out$st2$AUQC_raw,
     value_gain_vs_selected_fixed = out$st2$value_gain_all,
@@ -83,5 +87,5 @@ summary <- rbind(
   )
 )
 
-write.csv(summary, "result/supplementary_single_replicate_summary.csv", row.names = FALSE)
+write.csv(summary, summary_path, row.names = FALSE)
 print(summary)
