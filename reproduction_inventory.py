@@ -15,14 +15,14 @@ SCHEMA_VERSION = 1
 STAGES = {
     "environment": ("R", "check_environment.R"),
     "data": ("R", "prepare_data.R"),
-    "main": ("R", "sim_1.R"),
-    "truth": ("R", "sim_truth_summary.R"),
-    "sensitivity": ("R", "sim_sensitivity.R"),
-    "actg_crossfit": ("R", "real_data.R"),
-    "actg_validation": ("R", "actg_validation_uncertainty.R"),
+    "main": ("R", "simulation/sim_1.R"),
+    "truth": ("R", "simulation/sim_truth_summary.R"),
+    "sensitivity": ("R", "simulation/sim_sensitivity.R"),
+    "actg_crossfit": ("R", "case_study/real_data.R"),
+    "actg_validation": ("R", "case_study/actg_validation_uncertainty.R"),
     "tables": ("Python", "prepare_revision_outputs.py"),
-    "figure2": ("R", "make_simulation_figure2.R"),
-    "supplementary_figures": ("R", "make_supplementary_single_replicate_figures.R"),
+    "figure2": ("R", "simulation/make_simulation_figure2.R"),
+    "supplementary_figures": ("R", "simulation/make_supplementary_single_replicate_figures.R"),
     "figure1": ("Python", "make_framework_figure1.py"),
 }
 SETTINGS = {

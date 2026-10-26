@@ -4,6 +4,39 @@ This repository accompanies the manuscript **From Heterogeneous Treatment Effect
 
 The ACTG 175 example uses the publicly available trial dataset distributed in the R package [speff2trial](https://CRAN.R-project.org/package=speff2trial), version 1.0.5. The analysis compares zidovudine monotherapy with the two combination arms and evaluates event-free survival at 96 weeks. Data preparation retains all original records. The analysis scripts make the treatment-arm selection and construct the endpoint.
 
+## Repository structure
+
+The simulation and case study scripts are separated below. Run commands from the repository root, including when calling a script in a subfolder.
+
+```text
+.
+|-- simulation/
+|   |-- sim_1.R
+|   |-- sim_truth_summary.R
+|   |-- sim_sensitivity.R
+|   |-- make_simulation_figure2.R
+|   `-- make_supplementary_single_replicate_figures.R
+|-- case_study/
+|   |-- real_data.R
+|   `-- actg_validation_uncertainty.R
+|-- reproduce.py
+|-- verify_results.py
+|-- reproduction_inventory.py
+|-- prepare_data.R
+|-- prepare_revision_outputs.py
+|-- make_framework_figure1.py
+|-- install_dependencies.R
+|-- check_environment.R
+|-- renv.lock
+|-- requirements.txt
+|-- reference_results/
+|-- verification/
+|-- data/                         (created during execution)
+`-- result/                       (created during execution)
+```
+
+R performs the statistical analyses and produces Figures 2, 3, S1, and S2. Python provides the common run command, execution records, numerical verification, table postprocessing, and the Figure 1 framework diagram. These roles are retained to preserve the verified implementation. The complete analysis has one entry point, `reproduce.py`; users do not need to run the R and Python stages separately. Shared setup and reporting tools remain in the repository root. The script-to-output table below gives the full paths for individual analyses.
+
 ## Requirements
 
 The verified environment uses R 4.5.2, Python 3.12.14, and Pillow 12.3.0 on arm64 macOS. All 73 R package versions and their dependencies are recorded in `renv.lock` and `environment_versions.csv`. Key packages include grf 2.4.0, ggplot2 4.0.0, dplyr 1.1.4, survival 3.8-3, sandwich 3.1-1, and car 3.1-3. The scripts do not require private data or access to the authors' project directory.
@@ -103,19 +136,19 @@ Stage 2 is evaluated in every simulation replicate, without conditioning on Stag
 
 ## Outputs and manuscript correspondence
 
-All paths below are relative to `result/`.
+Script paths below are relative to the repository root. Output paths are relative to `result/`.
 
 | Manuscript item | Script | Output |
 | --- | --- | --- |
-| Table 3 and main simulation results | `sim_1.R` | `sim_main_SiM.csv`, `sim_main_SiM_summary.csv` |
+| Table 3 and main simulation results | `simulation/sim_1.R` | `sim_main_SiM.csv`, `sim_main_SiM_summary.csv` |
 | Figure 1 | `make_framework_figure1.py` | `figures/Figure_1_revised.png` |
-| Figure 2 | `make_simulation_figure2.R` | `figures/Figure_2_revised.png` |
-| Supplementary Table S1 | `sim_truth_summary.R` | `sim_truth_summary_step6.csv` |
-| Supplementary Table S2 | `sim_sensitivity.R`, then `prepare_revision_outputs.py` | `information_sensitivity/supplementary_table_s2.csv` and its raw/summary inputs |
-| ACTG final Stage 1 inference | `actg_validation_uncertainty.R` | `actg_validation/actg175_ipcw_stage1_global.csv`, `actg175_ipcw_stage1_effect_intervals.csv`, and bootstrap CSVs |
-| ACTG repeated split validation | `actg_validation_uncertainty.R` | `actg_validation/actg175_ipcw_validation_splits.csv`, `actg175_ipcw_validation_summary.csv` |
-| Figure 3 and descriptive ACTG curves | `real_data.R` | `actg_crossfit/figures/actg175_figure3_ipcw.png` and the corresponding `actg_crossfit/` CSVs |
-| Supplementary Figures S1 and S2 | `make_supplementary_single_replicate_figures.R` | `figures/supplementary_figure_s1_constant_benefit_no_hte.png`, `figures/supplementary_figure_s2_strong_qualitative_hte.png`, `supplementary_single_replicate_summary.csv` |
+| Figure 2 | `simulation/make_simulation_figure2.R` | `figures/Figure_2_revised.png` |
+| Supplementary Table S1 | `simulation/sim_truth_summary.R` | `sim_truth_summary_step6.csv` |
+| Supplementary Table S2 | `simulation/sim_sensitivity.R`, then `prepare_revision_outputs.py` | `information_sensitivity/supplementary_table_s2.csv` and its raw/summary inputs |
+| ACTG final Stage 1 inference | `case_study/actg_validation_uncertainty.R` | `actg_validation/actg175_ipcw_stage1_global.csv`, `actg175_ipcw_stage1_effect_intervals.csv`, and bootstrap CSVs |
+| ACTG repeated split validation | `case_study/actg_validation_uncertainty.R` | `actg_validation/actg175_ipcw_validation_splits.csv`, `actg175_ipcw_validation_summary.csv` |
+| Figure 3 and descriptive ACTG curves | `case_study/real_data.R` | `actg_crossfit/figures/actg175_figure3_ipcw.png` and the corresponding `actg_crossfit/` CSVs |
+| Supplementary Figures S1 and S2 | `simulation/make_supplementary_single_replicate_figures.R` | `figures/supplementary_figure_s1_constant_benefit_no_hte.png`, `figures/supplementary_figure_s2_strong_qualitative_hte.png`, `supplementary_single_replicate_summary.csv` |
 | Software and execution record | `check_environment.R`, `reproduce.py` | `package_versions.csv`, `session_info.txt`, `logs/*.log`, `logs/*.json` |
 
 Tables 1, 2, and 4 are conceptual summaries, not calculated outputs. Their text remains in the manuscript. Numerical table values come from the CSV sources above; the original Word formatting is retained in the submission source files.

@@ -1,51 +1,47 @@
 # Reproduction verification
 
-Verification date: 2026-10-06.
+Verification date: 2026-10-26.
 
-The full analyses were run in a separate directory with no prior result files. ACTG 175 data were reconstructed from the pinned public CRAN source rather than copied from an author-only input directory.
+The complete analyses were rerun in a fresh directory after the simulation scripts and ACTG case study scripts were placed in separate subfolders. There were no prior result files in that directory. ACTG 175 data were reconstructed from the pinned public CRAN source. The directory changes did not alter statistical methods, parameters, seeds, or reference results.
 
 ## Numerical agreement
 
-All 21 numerical output checks passed. Twenty reference CSV files were compared cell by cell. Every compared scientific value agrees exactly at the precision stored in the CSV files; the largest absolute difference was 0. The participant-level ACTG evaluation file matched its original SHA-256 fingerprint, row count, and column count exactly. That file is generated locally and is not redistributed in this repository. The checks included all 3,000 main-simulation replicates, 10,800 learner records from 5,400 sensitivity replicates, 1,000 ACTG bootstrap replicates, 200 validation splits, truth summaries, descriptive cross-fitted outputs, and both supplementary illustrative replicates.
+All 21 numerical output checks passed. Twenty reference CSV files were compared cell by cell, covering 320,151 data cells. Every compared scientific value agrees exactly at the precision stored in the CSV files. The largest absolute difference was 0. The participant-level ACTG evaluation file matched its original SHA-256 fingerprint, row count, and column count exactly. That file is generated locally and is not redistributed.
 
-The sole schema normalization maps the documented legacy Stage 1 rejection column names. No reference result was overwritten by a new result. See `verification/numerical_comparison.json` for row counts, hashes, and individual comparisons.
+The checks covered all 3,000 main-simulation replicates, 10,800 learner records from 5,400 sensitivity replicates, 1,000 ACTG bootstrap replicates, 200 validation splits, truth summaries, descriptive cross-fitted outputs, and both supplementary illustrative replicates.
+
+The sole schema normalization maps the documented legacy Stage 1 rejection column names. No reference result was overwritten. See verification/numerical_comparison.json for individual checks and verification/run_manifest.json for the new execution record.
 
 ## Environment and runtime
 
-R 4.5.2; Python 3.12.14; Pillow 12.3.0; arm64 macOS on an Apple M4 Max with 16 CPU cores and 128 GiB RAM. Eight workers were used where specified. The final run used a restored repository-local R library plus the R framework library, excluding the global user package library. All 73 locked analytical package versions matched. Detailed R versions are in `renv.lock` and `verification/session_info.txt`.
+R 4.5.2, Python 3.12.14, and Pillow 12.3.0 were used on arm64 macOS. The run reused the verified R library restored for the 2026-10-06 release, together with the R framework library. The global user package library was excluded. All 73 locked R package versions matched. Eight workers were used where specified. This check validates the reorganized workflow in that existing environment; it does not represent a new dependency installation.
 
-An initial restore with a different binary build of grf 2.4.0 did not reproduce every numerical output, despite matching package version strings. Single-package crossover checks isolated the difference to the compiled grf library. The final installer builds the unchanged CRAN grf 2.4.0 source with `-ffp-contract=off`. The source archive is checked by SHA-256, and the build uses the selected R 4.5.2 runtime. No statistical method, seed, reference value, or verification tolerance was changed to resolve this issue. Compiler and build evidence are recorded in `verification/grf_build.json` and `verification/package_builds.csv`.
+The previous release identified numerical differences between two macOS builds of grf 2.4.0 despite identical package version strings. The documented installer builds the unchanged CRAN source with -ffp-contract=off, which disables fused floating-point multiply-add contraction. The source checksum and build evidence from that installation are retained in verification/grf_build.json and verification/package_builds.csv. No statistical method, seed, reference value, or comparison tolerance was changed.
 
-Measured stage times exclude package installation and runner preflight. Stages ran in the documented order. Timings will vary with hardware and worker settings.
+Stage times below exclude package installation and preflight. Stages ran in the documented order. Timings vary with hardware and worker settings.
 
 | Stage | Seconds |
 | --- | ---: |
-| environment | 1.064 |
-| data | 1.256 |
-| main | 599.219 |
-| truth | 0.582 |
-| sensitivity | 405.529 |
-| actg_crossfit | 3.121 |
-| actg_validation | 43.021 |
-| tables | 0.036 |
-| figure2 | 0.699 |
-| supplementary_figures | 2.161 |
-| figure1 | 0.236 |
+| environment | 1.235 |
+| data | 1.108 |
+| main | 663.461 |
+| truth | 0.687 |
+| sensitivity | 448.069 |
+| actg_crossfit | 8.224 |
+| actg_validation | 53.487 |
+| tables | 2.28 |
+| figure2 | 1.941 |
+| supplementary_figures | 3.547 |
+| figure1 | 3.145 |
 
 ## Figure checks
 
-| Figure | Matches embedded manuscript pixels |
-| --- | --- |
-| Figure 1 | Yes |
-| Figure 2 | Yes |
-| Figure 3 | Yes |
-| Supplementary Figure S1 | Yes |
-| Supplementary Figure S2 | Yes |
+All five regenerated figures were compared with the accepted manuscript's original figure files. Their dimensions and RGB pixels were identical. These checks cover Figures 1, 2, and 3 and Supplementary Figures S1 and S2. See verification/figure_comparison.json.
 
 ## Scope
 
-Quick tests check execution only. They are stored separately from this full run. The default comparison tolerance is 1e-10, but no nonzero numerical difference was observed here. The public data reconstruction also passed byte-level comparison against the original input. Runtime worker-count metadata is checked against the run settings separately from scientific values.
+The reorganized package also passed a separate 11-stage quick execution check and 74 tooling regression tests. Quick outputs are not the manuscript results. Full-run verification retains the original absolute and relative tolerances of 1e-10, although no nonzero difference was observed. Public-data reconstruction matched the original analysis input byte for byte.
 
-The verifier additionally requires a completed same-run execution record, unchanged source and output hashes, all required artifacts, and five decodable nonblank figure PNGs. The manuscript pixel comparison above is a separate author-side check. Local filesystem paths are redacted from the published execution record; checksums are retained.
+The verifier requires a completed same-run record, unchanged source and output hashes, and all expected artifacts, including five readable, nonblank figures. The pixel comparison above is a separate release check. Local filesystem paths are redacted from published records; their checksums are retained. The 2026-10-06 release remains available at commit 3059b3ad1eff3f4dc66bede244a34f10a2f7ac87.
 
-These checks establish reproduction in the recorded environment. They are not the journal's independent reproducibility assessment. Linux and Windows were not executed for this release, and graphics can depend on system fonts and rendering libraries.
+Linux and Windows were not executed for this release. Graphics can depend on system fonts and rendering libraries.

@@ -3,10 +3,10 @@ suppressPackageStartupMessages({
   library(gridExtra)
 })
 
-source_prefix <- readLines("sim_1.R", warn = FALSE)
+source_prefix <- readLines("simulation/sim_1.R", warn = FALSE)
 cut_at <- grep("^## ---- 5-mc-wrapper", source_prefix)
 if (length(cut_at) != 1L) {
-  stop("Could not locate Monte Carlo wrapper boundary in sim_1.R")
+  stop("Could not locate Monte Carlo wrapper boundary in simulation/sim_1.R")
 }
 eval(parse(text = paste(source_prefix[seq_len(cut_at - 1L)], collapse = "\n")))
 
